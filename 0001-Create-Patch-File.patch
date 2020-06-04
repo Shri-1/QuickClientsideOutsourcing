@@ -1,0 +1,95 @@
+From 622067f713e9f4a8221c831787ea3547fef2d263 Mon Sep 17 00:00:00 2001
+From: Shrikant Satpathy <b417041@iiit-bh.ac.in>
+Date: Thu, 4 Jun 2020 17:29:12 +0000
+Subject: [PATCH] Create Patch File
+
+---
+ client.py      |   8 +++++---
+ client.pyc     | Bin 0 -> 1375 bytes
+ client_test.py |   4 ++++
+ 3 files changed, 9 insertions(+), 3 deletions(-)
+ create mode 100644 client.pyc
+
+diff --git a/client.py b/client.py
+index 40badcd..34cf423 100644
+--- a/client.py
++++ b/client.py
+@@ -35,14 +35,14 @@ def getDataPoint(quote):
+ 	stock = quote['stock']
+ 	bid_price = float(quote['top_bid']['price'])
+ 	ask_price = float(quote['top_ask']['price'])
+-	price = bid_price
++	price = (bid_price+ask_price)/2
+ 	return stock, bid_price, ask_price, price
+ 
+ def getRatio(price_a, price_b):
+ 	""" Get ratio of price_a and price_b """
+ 	""" ------------- Update this function ------------- """
+ 	""" Also create some unit tests for this function in client_test.py """
+-	return 1
++	return price_a/price_b
+ 
+ # Main
+ if __name__ == "__main__":
+@@ -52,8 +52,10 @@ if __name__ == "__main__":
+ 		quotes = json.loads(urllib2.urlopen(QUERY.format(random.random())).read())
+ 
+ 		""" ----------- Update to get the ratio --------------- """
++		prices = {}
+ 		for quote in quotes:
+ 			stock, bid_price, ask_price, price = getDataPoint(quote)
++			prices[stock]=price
+ 			print "Quoted %s at (bid:%s, ask:%s, price:%s)" % (stock, bid_price, ask_price, price)
+ 
+-		print "Ratio %s" % getRatio(price, price)
++		print "Ratio %s" % getRatio(prices['ABC'], prices['DEF'])
+diff --git a/client.pyc b/client.pyc
+new file mode 100644
+index 0000000000000000000000000000000000000000..ad84b5b4c7765b74199b288b81d20e94cc1d8911
+GIT binary patch
+literal 1375
+zcmb_b&2k$>5dQYZvZct0<DY<T163(DRe%Dglq<j3CY*vT7nNcQ*jn$j?Uh$M^3E*f
+zROFL+3m$+AFT``e9lA$Spg2dn)6?DC{Z02bt?1A7UO)Ncrvi)LD(}yE+4TU>{069i
+z^qn3c4VL~8X}HuQq!BcGVrbS^pkw^Pi5=(_udIUBpgXt-(R72W-$7l_3T^`I|M)A?
+z9w@~476=&kK{3Ybpa|m#H;^EH$F~=HdIu##Z{X?xbcgewAiWFffbL4%4>8hBq+3Y0
+zk?w%_-2iRkvE~{!L0h10@t(%G_wt*|-|$+mf%w}7bQc5JdKlb<{_7cD*Peyr<QCIX
+z{>{Hv_9Ir$oty3shm|Sv>fBhj`{?1Lhr`R3nm5l%{p9U+`4>}I@WKkOnAaXJd&pwu
+zAqUq1+}sE;VA=*;{dKtX#sB&u%tFi}e86PxT*sIN3&$*$Hja~yAn&qJhmFx~K`O5*
+zWlohlCsh+^((32DYRM{R)EU*(<c@=s&Rsq=W$l!cDy=icg_9w0W}2Op+Iy!>S<pLg
+zZZFD^BNA!Ne?P5E?h?uO=4ERfjo5<gvS5^Kjvy9i&#jTikf=n2ead2ZZYDHr+M4Sd
+z9<^n0u~(H;J6me{wsqFDO;Ofo!|`;IO}NjBvM+{(5BYrh#`PKEjNCr=bm)5$+#U-=
+zy<nT4+d(0xE|<TLHFofQFr_=kz9suHd(=yEia9Ecu;|Ora+TM5p`R#Ubs|unnMKHd
+z^pkl62fUZ&q)u*bBsDz{OgS2{6MvRX^0Lk{`w1IILcdn`t;(HBnEl=R_EW{Y``y>c
+z+5;<z9*sj?#Kw!S_WZto@O5&JZQo1VR8@KMrIYz}<%GO4wx)J6a}6_MCjQoszB?Fw
+z?_?%kjXbpcUl!HX`Gm5}XIya#w;^$v&*RzAc6pSU@@)(7sc9y;^M^H*Ywz=OWxeXV
+zup=2cKWHP#8OhxKZ>$n_y*K(F&u8xGj$kSl{lGs_C+dXVZg;gGZ3Ul2onSrqFz5w?
+F@E`j`FDU>3
+
+literal 0
+HcmV?d00001
+
+diff --git a/client_test.py b/client_test.py
+index a608a01..86a742d 100644
+--- a/client_test.py
++++ b/client_test.py
+@@ -8,6 +8,8 @@ class ClientTest(unittest.TestCase):
+       {'top_ask': {'price': 121.68, 'size': 4}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 117.87, 'size': 81}, 'id': '0.109974697771', 'stock': 'DEF'}
+     ]
+     """ ------------ Add the assertion below ------------ """
++    for quote in quotes:
++      self.assertEqual(getDataPoint(quote), (quote['stock'],quote['top_bid']['price'], quote['top_ask']['price'],(quote['top_bid']['price']+quote['top_ask']['price'])/2))
+ 
+   def test_getDataPoint_calculatePriceBidGreaterThanAsk(self):
+     quotes = [
+@@ -15,6 +17,8 @@ class ClientTest(unittest.TestCase):
+       {'top_ask': {'price': 121.68, 'size': 4}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 117.87, 'size': 81}, 'id': '0.109974697771', 'stock': 'DEF'}
+     ]
+     """ ------------ Add the assertion below ------------ """
++    for quote in quotes:
++      self.assertEqual(getDataPoint(quote), (quote['stock'],quote['top_bid']['price'], quote['top_ask']['price'],(quote['top_bid']['price']+quote['top_ask']['price'])/2))
+ 
+ 
+   """ ------------ Add more unit tests ------------ """
+-- 
+2.20.1
+
